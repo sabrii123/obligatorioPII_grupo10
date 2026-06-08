@@ -15,11 +15,10 @@ public class ProcessManagerImpl implements ProcessManager{
     private MyStack<Process> finishedProcesses;
 
     private static final int MAX_FINISHED = 3; // o el valor que les pidan/definan
-
+    GestorArchivos ga= new GestorArchivos();
     @Override
     public void loadProcessAndUserData(String processCsvPath, String usersCsvPath) {
         Process proceso_nuevo = new Process();
-
 
     }
 
@@ -35,7 +34,7 @@ public class ProcessManagerImpl implements ProcessManager{
 
                     pendingProcesses.insert(process);
 
-                    System.out.println("NEW PENDING PROCESS: PID=" + process.getPid()
+                    ga.escribirLog("NEW PENDING PROCESS: PID=" + process.getPid()
                             + " | " + process.getName()
                             + " | USER:" + process.getUser().getAlias()
                             + " UID:" + process.getUser().getUid()
