@@ -1,14 +1,18 @@
 package uy.edu.um.doors.entities;
+import lombok.Getter;
 import uy.edu.um.tad.list.MyList;
 import uy.edu.um.doors.entities.Event;
 
 public class Process implements Comparable<Process> {
 
+    @Getter
     private int pid;
+    @Getter
     private String name;
     private User user;
     private int priority;
     private String state;
+    private String finishType;
     private MyList<Event> events;
 
     public Process() {
@@ -23,16 +27,8 @@ public class Process implements Comparable<Process> {
         this.state = "new";
     }
 
-    public int getPid() {
-        return pid;
-    }
-
     public void setPid(int pid) {
         this.pid = pid;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {
@@ -74,6 +70,13 @@ public class Process implements Comparable<Process> {
     @Override
     public int compareTo(Process o) {
         return this.priority - o.priority;
+    }
+    public String getFinishType() {
+        return finishType;
+    }
+
+    public void setFinishType(String finishType) {
+        this.finishType = finishType;
     }
 
     public int calculatePriority() {

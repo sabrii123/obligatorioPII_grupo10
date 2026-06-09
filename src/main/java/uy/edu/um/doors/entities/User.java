@@ -1,5 +1,7 @@
 package uy.edu.um.doors.entities;
 
+import uy.edu.um.tad.hash.MyHash;
+import uy.edu.um.doors.ProcessManagerImpl;
 import uy.edu.um.tad.list.MyList;
 
 public class User {
@@ -40,4 +42,9 @@ public class User {
     public void setType(String type) {
         this.type = type;
     }
-}
+
+
+    }
+
+
+
