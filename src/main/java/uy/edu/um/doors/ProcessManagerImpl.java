@@ -1,20 +1,23 @@
 package uy.edu.um.doors;
 
 import uy.edu.um.doors.entities.Process;
+import uy.edu.um.doors.exceptions.ColaVacia;
 import uy.edu.um.tad.heap.MyHeap;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueue;
+import uy.edu.um.tad.stack.EmptyStackException;
 import uy.edu.um.tad.stack.MyStack;
 import uy.edu.um.tad.hash.MyHash;
 import uy.edu.um.doors.entities.*;
 import uy.edu.um.tad.stack.MyStackImpl;
+import uy.edu.um.doors.exceptions.*;
 
 import java.io.BufferedReader; //leer texto linea por linea
 import java.io.FileReader; //abrir archivo para lectura
 import java.io.IOException; //errores al leer archivos
 import java.util.List;
 
-public class ProcessManagerImpl implements ProcessManager{
+public class ProcessManagerImpl implements ProcessManager {
 
     //EL DISEÑO DE LA ESTRUCTURA DE ALMACENAMIENTO DEBE IMPLEMENTARSE EN ESTA CLASE EN RELACIÓN CON LAS ENTIDADES QUE DEFINA
     private MyQueue<Process> newProcesses;
@@ -23,7 +26,7 @@ public class ProcessManagerImpl implements ProcessManager{
     private MyStack<Process> finishedProcesses;
     private MyHash<Integer, User> users;
     private int MAX_FINISHED = 3; // o el valor que les pidan/definan
-    GestorArchivos ga= new GestorArchivos();
+    GestorArchivos ga = new GestorArchivos();
 
 
     @Override
@@ -34,40 +37,37 @@ public class ProcessManagerImpl implements ProcessManager{
 
 
     @Override
-    public void prepareProcesses()  {
-            while (!newProcesses.isEmpty()) {
-                try {
-                    Process process = newProcesses.dequeue();
+    public void prepareProcesses() throws ColaVacia {
+        while (!newProcesses.isEmpty()) {
+            try {
+                Process process = newProcesses.dequeue();
 
-                    int priority = process.calculatePriority();
-                    process.setPriority(priority);
-                    process.setState("PENDING");
+                int priority = process.calculatePriority();
+                process.setPriority(priority);
+                process.setState("PENDING");
 
-                    pendingProcesses.insert(process);
+                pendingProcesses.insert(process);
 
-                    ga.escribirLog("NEW PENDING PROCESS: PID=" + process.getPid()
-                            + " | " + process.getName()
-                            + " | USER:" + process.getUser().getAlias()
-                            + " UID:" + process.getUser().getUid()
-                            + " | P=" + process.getPriority());
-                } catch ( EmptyQueueException e) {
-                    System.out.println("La cola de procesos nuevos está vacía");
-                    break;
-                }
+                ga.escribirLog("NEW PENDING PROCESS: PID=" + process.getPid()
+                        + " | " + process.getName()
+                        + " | USER:" + process.getUser().getAlias()
+                        + " UID:" + process.getUser().getUid()
+                        + " | P=" + process.getPriority());
+            } catch (EmptyQueueException e) {
+                throw new ColaVacia("e");
             }
+        }
     }
 
     @Override
-    public void executeNextProcess() {
+    public void executeNextProcess() throws YaHayProcesoEjecusion, YaHayProcesoEjecusion {
         if (runningProcess != null) {
-            System.out.println("Ya hay un proceso en ejecución");
-            return;
+            throw new YaHayProcesoEjecusion("e");
         }
 
 
         if (pendingProcesses.isEmpty()) {
-            System.out.println("No hay procesos pendientes");
-            return;
+            throw new YaHayProcesoEjecusion("e");
         }
 
 
@@ -82,7 +82,7 @@ public class ProcessManagerImpl implements ProcessManager{
     }
 
     @Override
-    public void finishProcessOk() {
+    public void finishProcessOk() throws YaHayProcesoEjecusion {
         if (runningProcess != null) {
             runningProcess.setState("FINISHED");
             runningProcess.setFinishType("OK");
@@ -106,12 +106,12 @@ public class ProcessManagerImpl implements ProcessManager{
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            System.out.println("No hay ningún proceso en ejecución");
+            throw new YaHayProcesoEjecusion("e");
         }
     }
 
     @Override
-    public void finishProcessError() {
+    public void finishProcessError() throws NoHayProcesoEjecucion {
         if (runningProcess != null) {
             runningProcess.setState("FINISHED");
             runningProcess.setFinishType("ERROR");
@@ -139,12 +139,13 @@ public class ProcessManagerImpl implements ProcessManager{
             runningProcess = null;
 
         } else {
-            System.out.println("No hay ningún proceso en ejecución");
+            throw new NoHayProcesoEjecucion("e");
         }
 
     }
+
     @Override
-    public void terminateProcess(int uid) {
+    public void terminateProcess(int uid) throws NoHayProcesoEjecucion {
         if (runningProcess != null) {
             User responsibleUser = getUser(uid);
             if (responsibleUser == null) {
@@ -174,12 +175,12 @@ public class ProcessManagerImpl implements ProcessManager{
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            System.out.println("No hay ningún proceso en ejecución");
+            throw new NoHayProcesoEjecucion("e");
         }
     }
 
     @Override
-    public void printStatus() {
+    public void printStatus() throws ColaVacia {
         System.out.println("PROCESS STATUS");
 
         // EXECUTING
@@ -235,7 +236,7 @@ public class ProcessManagerImpl implements ProcessManager{
     }
 
     @Override
-    public void printStatusVerbose() {
+    public void printStatusVerbose() throws ColaVacia {
         System.out.println("PROCESS STATUS");
 
         // EXECUTING
@@ -282,14 +283,16 @@ public class ProcessManagerImpl implements ProcessManager{
 
             } catch (Exception e) {
                 break;
+
             }
         }
-        while (true) {
-            try {
+
+        try {
+            while (!aux.isEmpty()) {
                 finishedProcesses.push(aux.pop());
-            } catch (Exception e) {
-                break;
             }
+        } catch (EmptyStackException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -317,6 +320,7 @@ public class ProcessManagerImpl implements ProcessManager{
     public void printStatusByProcess(int pid) {
         System.out.println("IMPLEMENTAR");
     }
+
     /// FUNCIONES AUXILIARES
     private void cargarUsuarios(String usersCsvPath) {
         try (BufferedReader br = new BufferedReader(new FileReader(usersCsvPath))) {
@@ -357,6 +361,7 @@ public class ProcessManagerImpl implements ProcessManager{
         }
 
     }
+
     private User getUser(int uid) {
         if (users.contains(uid)) {
             return users.get(uid);
@@ -365,3 +370,5 @@ public class ProcessManagerImpl implements ProcessManager{
         return null;
     }
 }
+
+

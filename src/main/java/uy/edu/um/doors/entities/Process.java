@@ -1,7 +1,6 @@
 package uy.edu.um.doors.entities;
 import lombok.Getter;
 import uy.edu.um.tad.list.MyList;
-import uy.edu.um.doors.entities.Event;
 
 public class Process implements Comparable<Process> {
 
@@ -119,4 +118,11 @@ public class Process implements Comparable<Process> {
         return eventPriority + userWeight * totalEvents;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getPid() {
+        return pid;
+    }
 }
