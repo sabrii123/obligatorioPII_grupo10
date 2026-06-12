@@ -82,7 +82,7 @@ public class ProcessManagerImpl implements ProcessManager {
     }
 
     @Override
-    public void finishProcessOk() throws YaHayProcesoEjecusion {
+    public void finishProcessOk() throws NoHayProcesoEjecucion {
         if (runningProcess != null) {
             runningProcess.setState("FINISHED");
             runningProcess.setFinishType("OK");
@@ -106,7 +106,7 @@ public class ProcessManagerImpl implements ProcessManager {
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            throw new YaHayProcesoEjecusion("e");
+            throw new NoHayProcesoEjecucion("e");
         }
     }
 
