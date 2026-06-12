@@ -7,9 +7,6 @@ public class Event {
     private String type;
     private MyList<String> instructions;
 
-    public Event() {
-    }
-
     public Event(String type, MyList<String> instructions) {
         this.type = type;
         this.instructions = instructions;
