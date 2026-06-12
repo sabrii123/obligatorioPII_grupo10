@@ -3,6 +3,8 @@ package uy.edu.um.doors;
 import uy.edu.um.doors.entities.Process;
 import uy.edu.um.doors.exceptions.ColaVacia;
 import uy.edu.um.tad.heap.MyHeap;
+import uy.edu.um.tad.list.MyLinkedListImpl;
+import uy.edu.um.tad.list.MyList;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueue;
 import uy.edu.um.tad.stack.EmptyStackException;
@@ -331,18 +333,18 @@ public class ProcessManagerImpl implements ProcessManager {
                     continue;
                 }
                 String[] datos = linea.split(",");
-                int iud = Integer.parseInt(datos[0].trim());
+                int uid = Integer.parseInt(datos[0].trim());
                 String alias = datos[1].trim();
                 String type = datos[2].trim();
-                User user = new User(iud, alias, type);
-                users.put(iud, user);
+                User user = new User(uid, alias, type);
+                users.put(uid, user);
             }
         } catch (IOException e) {
             System.out.println("Error cargando los usuarios");
         }
     }
 
-    private void cargarProcesos(String processCsvPath){
+    private void cargarProcesos(String processCsvPath){ //poner el nombre en inglés
         try (BufferedReader br = new BufferedReader(new FileReader(processCsvPath))) {
             String linea;
             br.readLine();
@@ -353,13 +355,21 @@ public class ProcessManagerImpl implements ProcessManager {
                 String[] datos = linea.split(",");
                 int pid = Integer.parseInt(datos[0].trim());
                 String name = datos[1].trim();
-
-
-            }
-        } catch (IOException e) {
+                int uid = Integer.parseInt(datos[2].trim());
+                try{
+                    User user = users.get(uid);
+                    if (user == null){
+                        throw new EntidadNoExiste("No existe un usuario con UID " + uid); //cambiar los mensajes
+                    }
+                    MyList<Event> events = new MyLinkedListImpl<>();
+                    Process process = new Process(pid, name, user, events);
+                    newProcesses.enqueue(process);
+            } catch (EntidadNoExiste e) {
+                System.out.println(
+                        "No se pudo cargar el proceso PID ");
+        } } } catch (IOException e) {
             System.out.println("Error cargando los procesos");
-        }
-
+    }
     }
 
     private User getUser(int uid) {
