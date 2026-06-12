@@ -3,14 +3,19 @@ package uy.edu.um.doors;
 import uy.edu.um.doors.entities.Process;
 import uy.edu.um.doors.exceptions.ColaVacia;
 import uy.edu.um.tad.heap.MyHeap;
+import uy.edu.um.tad.list.MyLinkedListImpl;
+import uy.edu.um.tad.list.MyList;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueue;
+import uy.edu.um.tad.queue.MyQueueImpl;
 import uy.edu.um.tad.stack.EmptyStackException;
 import uy.edu.um.tad.stack.MyStack;
 import uy.edu.um.tad.hash.MyHash;
 import uy.edu.um.doors.entities.*;
 import uy.edu.um.tad.stack.MyStackImpl;
 import uy.edu.um.doors.exceptions.*;
+import uy.edu.um.tad.heap.MyHeapImpl;
+import uy.edu.um.tad.hash.MyHashImpl;
 
 import java.io.BufferedReader; //leer texto linea por linea
 import java.io.FileReader; //abrir archivo para lectura
@@ -26,11 +31,19 @@ public class ProcessManagerImpl implements ProcessManager {
     private MyStack<Process> finishedProcesses;
     private MyHash<Integer, User> users;
     private int MAX_FINISHED = 3; // o el valor que les pidan/definan
-    GestorArchivos ga = new GestorArchivos();
+    private GestorArchivos ga = new GestorArchivos();
+
+    public ProcessManagerImpl() {
+        this.newProcesses = new MyQueueImpl<>();
+        this.pendingProcesses = new MyHeapImpl<>();
+        this.finishedProcesses = new MyStackImpl<>();
+        this.users = new MyHashImpl<>();
+        this.runningProcess = null;
+    }
 
 
     @Override
-    public void loadProcessAndUserData(String processCsvPath, String usersCsvPath) {
+    public void loadProcessAndUserData(String processCsvPath, String usersCsvPath) throws DataLoadExeption {
         cargarUsuarios(usersCsvPath);
         cargarProcesos(processCsvPath);
     }
@@ -82,7 +95,7 @@ public class ProcessManagerImpl implements ProcessManager {
     }
 
     @Override
-    public void finishProcessOk() throws YaHayProcesoEjecusion {
+    public void finishProcessOk() throws  NoHayProcesoEjecucion {
         if (runningProcess != null) {
             runningProcess.setState("FINISHED");
             runningProcess.setFinishType("OK");
@@ -106,7 +119,7 @@ public class ProcessManagerImpl implements ProcessManager {
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            throw new YaHayProcesoEjecusion("e");
+            throw new NoHayProcesoEjecucion("e");
         }
     }
 
@@ -145,7 +158,7 @@ public class ProcessManagerImpl implements ProcessManager {
     }
 
     @Override
-    public void terminateProcess(int uid) throws NoHayProcesoEjecucion {
+    public void terminateProcess(int uid) throws NoHayProcesoEjecucion, NoExisteUsusarioConUid {
         if (runningProcess != null) {
             User responsibleUser = getUser(uid);
             if (responsibleUser == null) {
@@ -313,7 +326,7 @@ public class ProcessManagerImpl implements ProcessManager {
 
     @Override
     public void printStatusByUser(int uid) {
-        System.out.println("IMPLEMENTAR");
+        User user = users.get(uid);
     }
 
     @Override
@@ -330,44 +343,96 @@ public class ProcessManagerImpl implements ProcessManager {
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                String[] datos = linea.split(",");
-                int iud = Integer.parseInt(datos[0].trim());
+                String[] datos = linea.split(";");
+                int uid = Integer.parseInt(datos[0].trim());
                 String alias = datos[1].trim();
                 String type = datos[2].trim();
-                User user = new User(iud, alias, type);
-                users.put(iud, user);
+                User user = new User(uid, alias, type);
+                users.put(uid, user);
             }
         } catch (IOException e) {
             System.out.println("Error cargando los usuarios");
         }
     }
 
-    private void cargarProcesos(String processCsvPath){
+
+    private void cargarProcesos(String processCsvPath) {
         try (BufferedReader br = new BufferedReader(new FileReader(processCsvPath))) {
             String linea;
-            br.readLine();
+            br.readLine(); // saltea el encabezado: pid;uid;name;events
+
             while ((linea = br.readLine()) != null) {
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                String[] datos = linea.split(",");
+
+                String[] datos = linea.split(";");
+
                 int pid = Integer.parseInt(datos[0].trim());
-                String name = datos[1].trim();
+                User uid = null;
+                try {
+                    uid = getUser(Integer.parseInt(datos[1].trim()));
+                } catch (NoExisteUsusarioConUid e) {
+                    throw new RuntimeException(e);
+                }
+                String name = datos[2].trim();
+                MyList<Event> events = convertirStringAEventos(datos[3].trim());
 
+                Process process = new Process(pid, name,uid, events);
 
+                newProcesses.enqueue(process);
             }
+
         } catch (IOException e) {
             System.out.println("Error cargando los procesos");
         }
-
     }
 
-    private User getUser(int uid) {
+    private User getUser(int uid) throws NoExisteUsusarioConUid {
         if (users.contains(uid)) {
             return users.get(uid);
         }
-        System.out.println("No existe usuario con UID: " + uid);
         return null;
+    }
+    private MyList<Event> convertirStringAEventos(String eventosTexto) {
+        MyList<Event> events = new MyLinkedListImpl<>();
+
+        // Sacamos las llaves { }
+        eventosTexto = eventosTexto.replace("{", "").replace("}", "");
+
+        // Separamos cada evento por ;
+        String[] eventosSeparados = eventosTexto.split(";");
+
+        for (String eventoStr : eventosSeparados) {
+            if (eventoStr.trim().isEmpty()) {
+                continue;
+            }
+
+            // Ejemplo eventoStr: DISK:[commit,write]
+            String[] partes = eventoStr.split(":");
+
+            String tipo = partes[0].trim();
+
+            String instruccionesTexto = partes[1]
+                    .replace("[", "")
+                    .replace("]", "")
+                    .trim();
+
+            String[] instruccionesSeparadas = instruccionesTexto.split(",");
+
+            MyList<String> instructions = new MyLinkedListImpl<>();
+
+            for (String instruccion : instruccionesSeparadas) {
+                if (!instruccion.trim().isEmpty()) {
+                    instructions.add(instruccion.trim());
+                }
+            }
+
+            Event event = new Event(tipo, instructions);
+            events.add(event);
+        }
+
+        return events;
     }
 }
 
