@@ -3,6 +3,7 @@ package uy.edu.um.doors;
 import uy.edu.um.doors.entities.Process;
 import uy.edu.um.doors.exceptions.ColaVacia;
 import uy.edu.um.tad.heap.MyHeap;
+import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueue;
 import uy.edu.um.tad.stack.EmptyStackException;
@@ -313,7 +314,74 @@ public class ProcessManagerImpl implements ProcessManager {
 
     @Override
     public void printStatusByUser(int uid) {
-        System.out.println("IMPLEMENTAR");
+        User user = users.get(uid);
+        if (user == null){
+            throw new EntidadNoExiste("No existe el usuario con UID = " + uid);
+        }
+        boolean estado = false;
+        System.out.println("PROCESS STATUS BY USER");
+        System.out.println("USER:" + user.getAlias() + " UID:" + user.getUid());
+        //nombre
+        for (int i = 0; i<newProcesses.size(); i++){
+            Process process = newProcesses.get(i);
+            if (process.getUser().getUid()==uid){
+                System.out.println(
+                        "PID=" + process.getPid()
+                                + " | " + process.getName()
+                                + " | USER:" + process.getUser().getAlias()
+                                + " UID:" + process.getUser().getUid()
+                                + " | STATE: NEW"
+                );
+                estado = true;
+            }
+        }
+        //pending
+        MyHeap<Process> heapAuxiliar = new MyHeapImpl<>(false);
+        int cantEstadosPending = pendingProcesses.size();
+        for (int i = 0; i<cantEstadosPending; i++){
+            Process process = pendingProcesses.remove();
+            if (process.getUser().getUid()==uid){
+                System.out.println(
+                        "PID=" + process.getPid()
+                                + " | " + process.getName()
+                                + " | STATE: " + process.getState()
+                                + " | USER:" + process.getUser().getAlias()
+                                + " UID:" + process.getUser().getUid()
+                                + " | P=" + process.getPriority());
+                estado = true;
+            }
+            heapAuxiliar.insert(process);
+        }
+        while(!heapAuxiliar.isEmpty()){
+            Process process = heapAuxiliar.remove();
+            pendingProcesses.insert(process);
+        }
+        //finished
+        MyStack<Process> stackAuxiliar= new MyStackImpl<>();
+        int cantEstadosFinished = finishedProcesses.size();
+        try {
+            for (int i = 0; i < cantEstadosFinished; i++) {
+                Process process = finishedProcesses.pop();
+                if (process.getUser().getUid() == uid) {
+                    System.out.println(
+                            "PID=" + process.getPid()
+                                    + " | " + process.getName()
+                                    + " | STATE: " + process.getFinishType()
+                                    + " | USER:" + process.getUser().getAlias()
+                                    + " UID:" + process.getUser().getUid());
+                    estado = true;
+                }
+                stackAuxiliar.push(process);
+            }
+            while (!stackAuxiliar.isEmpty()) {
+                finishedProcesses.push(stackAuxiliar.pop());
+            }
+        } catch(EmptyStackException e){
+            System.out.println("Error al correr los procesos finalizados.");
+        }
+        if (!estado){
+            throw new EntidadNoExiste("El usuario con UID=" + uid + " no tiene procesos cargados en la memoria.");
+        }
     }
 
     @Override
