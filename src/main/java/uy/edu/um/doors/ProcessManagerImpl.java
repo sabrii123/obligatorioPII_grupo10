@@ -3,6 +3,7 @@ package uy.edu.um.doors;
 import uy.edu.um.doors.entities.Process;
 import uy.edu.um.doors.exceptions.ColaVacia;
 import uy.edu.um.tad.heap.MyHeap;
+import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.list.MyLinkedListImpl;
 import uy.edu.um.tad.list.MyList;
 import uy.edu.um.tad.queue.EmptyQueueException;
@@ -315,12 +316,206 @@ public class ProcessManagerImpl implements ProcessManager {
 
     @Override
     public void printStatusByUser(int uid) {
-        System.out.println("IMPLEMENTAR");
+        User user = users.get(uid);
+        if (user == null){
+            throw new EntidadNoExiste("No existe el usuario con UID = " + uid);
+        }
+        //NEW
+        boolean estado = false;
+        System.out.println("PROCESS STATUS BY USER");
+        System.out.println("USER:" + user.getAlias() + " | " + "UID:" + user.getUid());
+        boolean estadoNew = false;
+        for (int i = 0; i<newProcesses.size(); i++){
+            Process process = newProcesses.get(i);
+            if (process.getUser().getUid()==uid){
+                if (!estadoNew){
+                    System.out.println("NEW: ");
+                    estadoNew=true;
+                }
+                System.out.println(
+                        "PID=" + process.getPid()
+                        + " | " + process.getName()
+                        + " | USER:" + process.getUser().getAlias()
+                        + " UID:" + process.getUser().getUid()
+                        + " | STATE: " + process.getState());
+                estado = true;
+            }
+        }
+        //RUNNING
+        if (runningProcess!=null && runningProcess.getUser().getUid()==uid){
+            System.out.println("RUNNING: ");
+            System.out.println(
+                    "PID=" + runningProcess.getPid()
+                    + " | " + runningProcess.getName()
+                    + " | STATE: " + runningProcess.getState() //revisar formato y lo de "new" a "NEW" y si hay q sacarlo
+                    + " | USER:" + runningProcess.getUser().getAlias()
+                    + " UID:" + runningProcess.getUser().getUid()
+                    + " | P=" + runningProcess.getPriority());
+            estado = true;
+        }
+        //PENDING
+        MyHeap<Process> heapAuxiliar = new MyHeapImpl<>(false);
+        int cantEstadoPending = pendingProcesses.size();
+        boolean pending = false;
+        for (int i = 0; i<cantEstadoPending; i++){
+            Process process = pendingProcesses.remove();
+            if (process.getUser().getUid()==uid){
+                if (!pending){
+                    System.out.println("PENDING: ");
+                    pending=true;
+                }
+                        System.out.println(
+                                "PID=" + process.getPid()
+                                + " | " + process.getName()
+                                + " | STATE: " + process.getState()
+                                + " | USER:" + process.getUser().getAlias()
+                                + " UID:" + process.getUser().getUid()
+                                + " | P=" + process.getPriority());
+                estado=true;
+            }
+            heapAuxiliar.insert(process);
+        }
+        while(!heapAuxiliar.isEmpty()){
+            Process process = heapAuxiliar.remove();
+            pendingProcesses.insert(process);
+        }
+        //FINISHED
+        MyStack<Process> stackAuxiliar= new MyStackImpl<>();
+        int cantEstadosFinished = finishedProcesses.size();
+        try {
+            boolean finished=false;
+            for (int i = 0; i < cantEstadosFinished; i++) {
+                Process process = finishedProcesses.pop();
+                if (process.getUser().getUid() == uid) {
+                    if (!finished){
+                        System.out.println("FINISHED: ");
+                        finished=true;
+                    }
+                    System.out.println(
+                                    "PID=" + process.getPid()
+                                    + " | " + process.getName()
+                                    + " | STATE: " + process.getFinishType()
+                                    + " | USER:" + process.getUser().getAlias()
+                                    + " UID:" + process.getUser().getUid());
+                    estado = true;
+                }
+                stackAuxiliar.push(process);
+            }
+            while (!stackAuxiliar.isEmpty()) {
+                finishedProcesses.push(stackAuxiliar.pop());
+            }
+        } catch(EmptyStackException e){
+            System.out.println("Error al recorrer los procesos finalizados.");
+        }
+        if (!estado){
+            throw new EntidadNoExiste("No existe un usuario cargado en memoria con PID = " + uid);
+        }
     }
 
     @Override
     public void printStatusByProcess(int pid) {
-        System.out.println("IMPLEMENTAR");
+        System.out.println("PROCESS STATUS BY PID");
+        boolean encontrado = false;
+        //NEW
+        for (int i=0; i< newProcesses.size(); i++){
+            Process process = newProcesses.get(i);
+            if (process.getPid()==pid){
+                System.out.println(
+                        "PID=" + process.getPid()
+                        + " | " + process.getName()
+                        + " | USER:" + process.getUser().getAlias()
+                        + " UID:" + process.getUser().getUid()
+                        + " | STATE: " + process.getState()); //revisar "new"
+                for (int j=0; j<process.getEvents().size(); j++){
+                        Event event = process.getEvents().get(j);
+                        System.out.println(
+                                "EVENT: " + event.getType()
+                                + " | Instructions " + event.getInstructions());
+                }
+                encontrado = true;
+            }
+        }
+        //RUNNING
+        if (!encontrado && runningProcess!= null && runningProcess.getPid()==pid){
+            System.out.println(
+                    "PID=" + runningProcess.getPid()
+                    + " | " + runningProcess.getName()
+                    + " | USER:" +runningProcess.getUser().getAlias()
+                    + " UID:" + runningProcess.getUser().getUid()
+                    + " | STATE: " + runningProcess.getState()
+                    + " | P=" + runningProcess.getPriority());
+            for ( int j=0; j<runningProcess.getEvents().size(); j++){
+                Event event = runningProcess.getEvents().get(j);
+                System.out.println(
+                        "EVENT: " + event.getType()
+                                + " | Instructions " + event.getInstructions());
+            }
+            encontrado=true;
+        }
+        //PENDING
+        if (!encontrado) {
+        MyHeap<Process> heapAuxiliar = new MyHeapImpl<>(false);
+        int cantidadEstadoPending=pendingProcesses.size();
+        for (int i =0;i<cantidadEstadoPending;i++){
+            Process process = pendingProcesses.remove();
+            if (process.getPid()==pid){
+                System.out.println(
+                        "PID=" + process.getPid()
+                        + " | " + process.getName()
+                        + " | USER:" + process.getUser().getAlias()
+                        + " UID:" + process.getUser().getUid()
+                        + " | STATE: " + process.getState()
+                        + " | P=" + process.getPriority());
+                for (int j=0;j<process.getEvents().size();j++){
+                    Event event = process.getEvents().get(j);
+                    System.out.println(
+                            "EVENT: " + event.getType()
+                                    + " | Instructions " + event.getInstructions());
+                }
+                encontrado=true;
+            }
+            heapAuxiliar.insert(process);
+        }
+        while(!heapAuxiliar.isEmpty()){
+            Process process=heapAuxiliar.remove();
+            pendingProcesses.insert(process);
+        }
+        }
+        //FINISHED
+        if(!encontrado){
+            MyStack<Process> stackAuxiliar= new MyStackImpl<>();
+            int cantEstadoFinished=finishedProcesses.size();
+            try{
+                for(int i=0;i<cantEstadoFinished;i++){
+                    Process process= finishedProcesses.pop();
+                    if(process.getPid()==pid){
+                        System.out.println(
+                                "PID=" + process.getPid()
+                                + " | " + process.getName()
+                                + " | USER:" + process.getUser().getAlias()
+                                + " UID:" + process.getUser().getUid()
+                                + " | STATE: " + process.getFinishType());
+                        for (int j=0;j<process.getEvents().size();j++){
+                            Event event=process.getEvents().get(j);
+                            System.out.println(
+                                    "EVENT: " + event.getType()
+                                    + " | Instructions " + event.getInstructions());
+                        }
+                        encontrado=true;
+                    }
+                    stackAuxiliar.push(process);
+                }
+                while(!stackAuxiliar.isEmpty()){
+                    Process process=stackAuxiliar.pop();
+                    finishedProcesses.push(process);
+                }
+            } catch(EmptyStackException e){
+                System.out.println(
+                        "Error al recorrer los procesos finalizados.");
+            }
+        }
+        if (!encontrado){
+            throw new EntidadNoExiste("No existe un proceso cargado en memoria con PID = " + pid);}
     }
 
     /// FUNCIONES AUXILIARES

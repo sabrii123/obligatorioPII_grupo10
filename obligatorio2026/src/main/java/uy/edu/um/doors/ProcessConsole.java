@@ -21,7 +21,7 @@ public class ProcessConsole {
             String input = scanner.nextLine().trim();
             if (input.isEmpty()) {
                 continue;
-            }iuuvuhjvhjhhj
+            }
             String[] parts = input.split("\\s+");
             String command = parts[0].toLowerCase();
             try {
