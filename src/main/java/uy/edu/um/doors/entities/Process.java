@@ -1,5 +1,6 @@
 package uy.edu.um.doors.entities;
 import lombok.Getter;
+import uy.edu.um.doors.exceptions.NoExisteUsusarioConUid;
 import uy.edu.um.tad.list.MyList;
 
 public class Process implements Comparable<Process> {
@@ -14,8 +15,6 @@ public class Process implements Comparable<Process> {
     private String finishType;
     private MyList<Event> events;
 
-    public Process() {
-    }
 
     public Process(int pid, String name, User user, MyList<Event> events) {
         this.pid = pid;
@@ -107,7 +106,7 @@ public class Process implements Comparable<Process> {
 
         int userWeight;
 
-        if (this.getUser().getType().equals("admin")) {
+        if (this.getUser().equals("admin")) {
             userWeight = 32;
         } else {
             userWeight = 16;
@@ -122,7 +121,5 @@ public class Process implements Comparable<Process> {
         return name;
     }
 
-    public int getPid() {
-        return pid;
-    }
+
 }

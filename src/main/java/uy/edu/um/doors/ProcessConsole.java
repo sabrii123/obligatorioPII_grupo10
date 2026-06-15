@@ -1,5 +1,7 @@
 package uy.edu.um.doors;
 
+import uy.edu.um.doors.exceptions.*;
+
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -113,13 +115,17 @@ public class ProcessConsole {
                 System.out.println("No se puede leer el archivo de usuarios: " + usersCsvPath);
                 return;
             }
-            processManager.loadProcessAndUserData(processCsvPath, usersCsvPath);
+            try {
+                processManager.loadProcessAndUserData(processCsvPath, usersCsvPath);
+            } catch (DataLoadExeption e) {
+                throw new RuntimeException(e);
+            }
         } catch (InvalidPathException e) {
-            System.out.println("Ruta inválida: " + e.getInput());
+            System.out.println("Ruta inválida: " + e.getMessage());
         }
     }
 
-    private void handleFinishCommand(String[] parts) {
+    private void handleFinishCommand(String[] parts) throws YaHayProcesoEjecusion {
         if (parts.length < 2) {
             System.out.println("Uso: pfinish OK | ERROR | TERM [UID]");
             return;
@@ -127,10 +133,18 @@ public class ProcessConsole {
         String finishType = parts[1].toUpperCase();
         switch (finishType) {
             case "OK":
-                processManager.finishProcessOk();
+                try {
+                    processManager.finishProcessOk();
+                } catch (YaHayProcesoEjecusion e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "ERROR":
-                processManager.finishProcessError();
+                try {
+                    processManager.finishProcessError();
+                } catch (NoHayProcesoEjecucion e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "TERM":
                 if (parts.length < 3) {
@@ -139,7 +153,13 @@ public class ProcessConsole {
                 }
                 try {
                     int uid = Integer.parseInt(parts[2]);
-                    processManager.terminateProcess(uid);
+                    try {
+                        processManager.terminateProcess(uid);
+                    } catch (NoHayProcesoEjecucion e) {
+                        throw new RuntimeException(e);
+                    } catch (NoExisteUsusarioConUid e) {
+                        throw new RuntimeException(e);
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("UID no es un número de ID válido");
                 }
@@ -153,13 +173,21 @@ public class ProcessConsole {
 
     private void handleStatusCommand(String[] parts) {
         if (parts.length == 1) {
-            processManager.printStatus();
+            try {
+                processManager.printStatus();
+            } catch (ColaVacia e) {
+                throw new RuntimeException(e);
+            }
             return;
         }
         String option = parts[1].toLowerCase();
         switch (option) {
             case "-verbose":
-                processManager.printStatusVerbose();
+                try {
+                    processManager.printStatusVerbose();
+                } catch (ColaVacia e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "-u":
                 if (parts.length < 3) {
