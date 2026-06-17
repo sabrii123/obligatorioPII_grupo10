@@ -63,7 +63,7 @@ public class ProcessConsole {
 
     private void handleLoadCommand(String[] parts) {
         if (parts.length != 5) {
-            System.out.println("Uso: pload -p [path_csv_procesos] -u [path_csv_usuarios]");
+            System.out.println("Uso: pload -p process.csv -u users.csv");
             return;
         }
         String processCsvPath = null;
@@ -135,7 +135,7 @@ public class ProcessConsole {
             case "OK":
                 try {
                     processManager.finishProcessOk();
-                } catch (YaHayProcesoEjecusion e) {
+                } catch (NoHayProcesoEjecucion e) {
                     throw new RuntimeException(e);
                 }
                 break;

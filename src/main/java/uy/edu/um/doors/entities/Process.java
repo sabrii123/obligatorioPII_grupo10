@@ -22,7 +22,7 @@ public class Process implements Comparable<Process> {
         this.user = user;
         this.events = events;
         this.priority = 0;
-        this.state = "new";
+        this.state = "NEW";
     }
 
     public void setPid(int pid) {
