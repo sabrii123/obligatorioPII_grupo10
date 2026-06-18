@@ -445,7 +445,7 @@ public class ProcessManagerImpl implements ProcessManager {
                                 + " | STATE: " + process.getState());
                 for (int j=0; j<process.getEvents().size(); j++){
                     Event event = process.getEvents().get(j);
-                    System.out.println(
+                    System.out.print(
                             "EVENT: " + event.getType()
                                     + " | Instructions [");
                     for(int k=0;k<event.getInstructions().size();k++){
@@ -470,7 +470,7 @@ public class ProcessManagerImpl implements ProcessManager {
                             + " | P=" + runningProcess.getPriority());
             for (int j=0; j<runningProcess.getEvents().size(); j++){
                 Event event = runningProcess.getEvents().get(j);
-                System.out.println(
+                System.out.print(
                         "EVENT: " + event.getType()
                                 + " | Instructions [");
                 for(int k=0;k<event.getInstructions().size();k++){
@@ -490,7 +490,7 @@ public class ProcessManagerImpl implements ProcessManager {
             for (int i =0;i<cantidadEstadoPending;i++){
                 Process process = pendingProcesses.remove();
                 if (process.getPid()==pid){
-                    System.out.println(
+                    System.out.print(
                             "PID=" + process.getPid()
                                     + " | " + process.getName()
                                     + " | USER:" + process.getUser().getAlias()
@@ -499,7 +499,7 @@ public class ProcessManagerImpl implements ProcessManager {
                                     + " | P=" + process.getPriority());
                     for (int j=0; j<process.getEvents().size(); j++) {
                         Event event = process.getEvents().get(j);
-                        System.out.println(
+                        System.out.print(
                                 "EVENT: " + event.getType()
                                         + " | Instructions [");
                         for (int k = 0; k < event.getInstructions().size(); k++) {
@@ -535,7 +535,7 @@ public class ProcessManagerImpl implements ProcessManager {
                                         + " | STATE: " + process.getFinishType());
                         for (int j=0; j<process.getEvents().size(); j++){
                             Event event = process.getEvents().get(j);
-                            System.out.println(
+                            System.out.print(
                                     "EVENT: " + event.getType()
                                             + " | Instructions [");
                             for(int k=0;k<event.getInstructions().size();k++){
@@ -619,44 +619,34 @@ public class ProcessManagerImpl implements ProcessManager {
         System.out.println("No existe usuario con UID: " + uid);
         return null;
     }
+
     private MyList<Event> convertirStringAEventos(String eventosTexto) {
         MyList<Event> events = new MyLinkedListImpl<>();
-
         // Sacamos las llaves { }
         eventosTexto = eventosTexto.replace("{", "").replace("}", "");
-
         // Separamos cada evento por ;
         String[] eventosSeparados = eventosTexto.split(";");
-
         for (String eventoStr : eventosSeparados) {
             if (eventoStr.trim().isEmpty()) {
                 continue;
             }
-
             // Ejemplo eventoStr: DISK:[commit,write]
             String[] partes = eventoStr.split(":");
-
             String tipo = partes[0].trim();
-
             String instruccionesTexto = partes[1]
                     .replace("[", "")
                     .replace("]", "")
                     .trim();
-
             String[] instruccionesSeparadas = instruccionesTexto.split(",");
-
             MyList<String> instructions = new MyLinkedListImpl<>();
-
             for (String instruccion : instruccionesSeparadas) {
                 if (!instruccion.trim().isEmpty()) {
                     instructions.add(instruccion.trim());
                 }
             }
-
             Event event = new Event(tipo, instructions);
             events.add(event);
         }
-
         return events;
     }
 }

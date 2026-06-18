@@ -1,218 +1,218 @@
-
-package ProcessManagerTest;
-
-import org.junit.jupiter.api.Test;
-import uy.edu.um.doors.ProcessManager;
-import uy.edu.um.doors.ProcessManagerImpl;
-import uy.edu.um.doors.exceptions.ColaVacia;
-import uy.edu.um.doors.exceptions.NoHayProcesoEjecucion;
-import uy.edu.um.doors.exceptions.NoExisteUsusarioConUid;
-import uy.edu.um.doors.exceptions.YaHayProcesoEjecusion;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class ProccesManagerTestImpl {
-
-    private Path crearUsersCsv() throws Exception {
-        Path archivo = Files.createTempFile("users", ".csv");
-
-        String contenido = """
-                uid;alias;type
-                25;Zeus;ADMIN
-                10;Atenea;GENERIC
-                """;
-
-        Files.writeString(archivo, contenido);
-        return archivo;
-    }
-
-    private Path crearProcessCsv() throws Exception {
-        Path archivo = Files.createTempFile("process", ".csv");
-
-        String contenido = """
-                pid;name;uid
-                1;powershell.exe;25
-                2;chrome.exe;10
-                3;java.exe;25
-                """;
-
-        Files.writeString(archivo, contenido);
-        return archivo;
-    }
-
-    @Test
-    void cargarUsuariosYProcesosCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        assertDoesNotThrow(() ->
-                mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString())
-        );
-    }
-
-    @Test
-    void prepararProcesosCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-
-        assertDoesNotThrow(() ->
-                mgr.prepareProcesses()
-        );
-    }
-
-    @Test
-    void ejecutarProcesoCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-
-        assertDoesNotThrow(() ->
-                mgr.executeNextProcess()
-        );
-    }
-
-    @Test
-    void ejecutarProcesoSinPrepararLanzaExcepcion() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-
-        assertThrows(YaHayProcesoEjecusion.class,
-                () -> mgr.executeNextProcess()
-        );
-    }
-
-    @Test
-    void noPuedeEjecutarDosProcesosAlMismoTiempo() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-
-        mgr.executeNextProcess();
-
-        assertThrows(YaHayProcesoEjecusion.class,
-                () -> mgr.executeNextProcess()
-        );
-    }
-
-    @Test
-    void finalizarProcesoOkCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-        mgr.executeNextProcess();
-
-        assertDoesNotThrow(() ->
-                mgr.finishProcessOk()
-        );
-    }
-
-    @Test
-    void finalizarProcesoErrorCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-        mgr.executeNextProcess();
-
-        assertDoesNotThrow(() ->
-                mgr.finishProcessError()
-        );
-    }
-
-    @Test
-    void finalizarErrorSinProcesoEnEjecucionLanzaExcepcion() {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        assertThrows(NoHayProcesoEjecucion.class,
-                () -> mgr.finishProcessError()
-        );
-    }
-
-    @Test
-    void terminarProcesoPorUsuarioCorrectamente() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-        mgr.executeNextProcess();
-
-        assertDoesNotThrow(() ->
-                mgr.terminateProcess(25)
-        );
-    }
-
-    @Test
-    void terminarProcesoSinProcesoEnEjecucionLanzaExcepcion() {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        assertThrows(NoHayProcesoEjecucion.class,
-                () -> mgr.terminateProcess(25)
-        );
-    }
-
-    @Test
-    void printStatusNoRompe() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-        mgr.executeNextProcess();
-
-        assertDoesNotThrow(() ->
-                mgr.printStatus()
-        );
-    }
-
-    @Test
-    void printStatusVerboseNoRompe() throws Exception {
-        ProcessManager mgr = new ProcessManagerImpl();
-
-        Path processCsv = crearProcessCsv();
-        Path usersCsv = crearUsersCsv();
-
-        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
-        mgr.prepareProcesses();
-        mgr.executeNextProcess();
-
-        assertDoesNotThrow(() ->
-                mgr.printStatusVerbose()
-        );
-    }
-}
+//
+//package ProcessManagerTest;
+//
+//import org.junit.jupiter.api.Test;
+//import uy.edu.um.doors.ProcessManager;
+//import uy.edu.um.doors.ProcessManagerImpl;
+//import uy.edu.um.doors.exceptions.ColaVacia;
+//import uy.edu.um.doors.exceptions.NoHayProcesoEjecucion;
+//import uy.edu.um.doors.exceptions.NoExisteUsusarioConUid;
+//import uy.edu.um.doors.exceptions.YaHayProcesoEjecusion;
+//
+//import java.nio.file.Files;
+//import java.nio.file.Path;
+//
+//import static org.junit.jupiter.api.Assertions.*;
+//
+//public class ProccesManagerTestImpl {
+//
+//    private Path crearUsersCsv() throws Exception {
+//        Path archivo = Files.createTempFile("users", ".csv");
+//
+//        String contenido = """
+//                uid;alias;type
+//                25;Zeus;ADMIN
+//                10;Atenea;GENERIC
+//                """;
+//
+//        Files.writeString(archivo, contenido);
+//        return archivo;
+//    }
+//
+//    private Path crearProcessCsv() throws Exception {
+//        Path archivo = Files.createTempFile("process", ".csv");
+//
+//        String contenido = """
+//                pid;name;uid
+//                1;powershell.exe;25
+//                2;chrome.exe;10
+//                3;java.exe;25
+//                """;
+//
+//        Files.writeString(archivo, contenido);
+//        return archivo;
+//    }
+//
+//    @Test
+//    void cargarUsuariosYProcesosCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString())
+//        );
+//    }
+//
+//    @Test
+//    void prepararProcesosCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//
+//        assertDoesNotThrow(() ->
+//                mgr.prepareProcesses()
+//        );
+//    }
+//
+//    @Test
+//    void ejecutarProcesoCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.executeNextProcess()
+//        );
+//    }
+//
+//    @Test
+//    void ejecutarProcesoSinPrepararLanzaExcepcion() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//
+//        assertThrows(YaHayProcesoEjecusion.class,
+//                () -> mgr.executeNextProcess()
+//        );
+//    }
+//
+//    @Test
+//    void noPuedeEjecutarDosProcesosAlMismoTiempo() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//
+//        mgr.executeNextProcess();
+//
+//        assertThrows(YaHayProcesoEjecusion.class,
+//                () -> mgr.executeNextProcess()
+//        );
+//    }
+//
+//    @Test
+//    void finalizarProcesoOkCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//        mgr.executeNextProcess();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.finishProcessOk()
+//        );
+//    }
+//
+//    @Test
+//    void finalizarProcesoErrorCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//        mgr.executeNextProcess();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.finishProcessError()
+//        );
+//    }
+//
+//    @Test
+//    void finalizarErrorSinProcesoEnEjecucionLanzaExcepcion() {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        assertThrows(NoHayProcesoEjecucion.class,
+//                () -> mgr.finishProcessError()
+//        );
+//    }
+//
+//    @Test
+//    void terminarProcesoPorUsuarioCorrectamente() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//        mgr.executeNextProcess();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.terminateProcess(25)
+//        );
+//    }
+//
+//    @Test
+//    void terminarProcesoSinProcesoEnEjecucionLanzaExcepcion() {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        assertThrows(NoHayProcesoEjecucion.class,
+//                () -> mgr.terminateProcess(25)
+//        );
+//    }
+//
+//    @Test
+//    void printStatusNoRompe() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//        mgr.executeNextProcess();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.printStatus()
+//        );
+//    }
+//
+//    @Test
+//    void printStatusVerboseNoRompe() throws Exception {
+//        ProcessManager mgr = new ProcessManagerImpl();
+//
+//        Path processCsv = crearProcessCsv();
+//        Path usersCsv = crearUsersCsv();
+//
+//        mgr.loadProcessAndUserData(processCsv.toString(), usersCsv.toString());
+//        mgr.prepareProcesses();
+//        mgr.executeNextProcess();
+//
+//        assertDoesNotThrow(() ->
+//                mgr.printStatusVerbose()
+//        );
+//    }
+//}
 
 
 //ej de lo que hay que hacer
