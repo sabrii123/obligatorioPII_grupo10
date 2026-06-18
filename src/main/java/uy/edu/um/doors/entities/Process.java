@@ -1,6 +1,5 @@
 package uy.edu.um.doors.entities;
 import lombok.Getter;
-import uy.edu.um.doors.exceptions.NoExisteUsusarioConUid;
 import uy.edu.um.tad.list.MyList;
 
 public class Process implements Comparable<Process> {
@@ -122,4 +121,7 @@ public class Process implements Comparable<Process> {
     }
 
 
+    public int getPid() {
+        return pid;
+    }
 }
