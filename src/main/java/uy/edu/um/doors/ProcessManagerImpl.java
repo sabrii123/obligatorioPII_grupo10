@@ -38,7 +38,7 @@ public class ProcessManagerImpl implements ProcessManager {
         this.users = new MyHashImpl<>();
         this.runningProcess = null;
     }
-    private int MAX_FINISHED = 3; // o el valor que les pidan/definan
+    private int MAX_FINISHED = 7; // o el valor que les pidan/definan
     GestorArchivos ga = new GestorArchivos();
 
 
