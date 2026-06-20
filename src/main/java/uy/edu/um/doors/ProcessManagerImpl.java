@@ -443,19 +443,8 @@ public class ProcessManagerImpl implements ProcessManager {
                                 + " | USER:" + process.getUser().getAlias()
                                 + " UID:" + process.getUser().getUid()
                                 + " | STATE: " + process.getState());
-                for (int j=0; j<process.getEvents().size(); j++){
-                    Event event = process.getEvents().get(j);
-                    System.out.print(
-                            "EVENT: " + event.getType()
-                                    + " | Instructions [");
-                    for(int k=0;k<event.getInstructions().size();k++){
-                        System.out.print(event.getInstructions().get(k));
-                        if(k<event.getInstructions().size()-1){
-                            System.out.print(", ");
-                        }
-                    }
-                    System.out.println("]");
-                }
+                System.out.println(" ");
+                printEvents(process);
                 encontrado = true;
             }
         }
@@ -468,19 +457,8 @@ public class ProcessManagerImpl implements ProcessManager {
                             + " UID:" + runningProcess.getUser().getUid()
                             + " | STATE: " + runningProcess.getState()
                             + " | P=" + runningProcess.getPriority());
-            for (int j=0; j<runningProcess.getEvents().size(); j++){
-                Event event = runningProcess.getEvents().get(j);
-                System.out.print(
-                        "EVENT: " + event.getType()
-                                + " | Instructions [");
-                for(int k=0;k<event.getInstructions().size();k++){
-                    System.out.print(event.getInstructions().get(k));
-                    if(k<event.getInstructions().size()-1){
-                        System.out.print(", ");
-                    }
-                }
-                System.out.println("]");
-            }
+            System.out.println(" ");
+            printEvents(runningProcess);
             encontrado=true;
         }
         //PENDING
@@ -497,19 +475,8 @@ public class ProcessManagerImpl implements ProcessManager {
                                     + " UID:" + process.getUser().getUid()
                                     + " | STATE: " + process.getState()
                                     + " | P=" + process.getPriority());
-                    for (int j=0; j<process.getEvents().size(); j++) {
-                        Event event = process.getEvents().get(j);
-                        System.out.print(
-                                "EVENT: " + event.getType()
-                                        + " | Instructions [");
-                        for (int k = 0; k < event.getInstructions().size(); k++) {
-                            System.out.print(event.getInstructions().get(k));
-                            if (k < event.getInstructions().size() - 1) {
-                                System.out.print(", ");
-                            }
-                        }
-                        System.out.println("]");
-                    }
+                    System.out.println(" ");
+                    printEvents(process);
                     encontrado=true;
                 }
                 heapAuxiliar.insert(process);
@@ -533,19 +500,8 @@ public class ProcessManagerImpl implements ProcessManager {
                                         + " | USER:" + process.getUser().getAlias()
                                         + " UID:" + process.getUser().getUid()
                                         + " | STATE: " + process.getFinishType());
-                        for (int j=0; j<process.getEvents().size(); j++){
-                            Event event = process.getEvents().get(j);
-                            System.out.print(
-                                    "EVENT: " + event.getType()
-                                            + " | Instructions [");
-                            for(int k=0;k<event.getInstructions().size();k++){
-                                System.out.print(event.getInstructions().get(k));
-                                if(k<event.getInstructions().size()-1){
-                                    System.out.print(", ");
-                                }
-                            }
-                            System.out.println("]");
-                        }
+                        System.out.println(" ");
+                        printEvents(process);
                         encontrado=true;
                     }
                     stackAuxiliar.push(process);
