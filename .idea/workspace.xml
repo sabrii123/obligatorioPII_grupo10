@@ -4,17 +4,58 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b76b92f-e1ed-45dd-b95c-b1359d7a642a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/obligatorio.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="8b76b92f-e1ed-45dd-b95c-b1359d7a642a" name="Changes" comment="cambiado por todas">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DOORS_PROCESS_LOG_2026-06-19.txt" beforeDir="false" afterPath="$PROJECT_DIR$/DOORS_PROCESS_LOG_2026-06-19.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/PII - Obligatorio 2026.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/process.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/doors/ProcessConsole.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/doors/ProcessManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/doors/ProcessManagerImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/binarytree/MySearchBinaryTree.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/binarytree/MySearchBinaryTreeImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/binarytree/TreeNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/hash/MyHash.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/hash/MyHashImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/heap/EmptyHeapException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/heap/MyHeap.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/heap/MyHeapImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/list/MyLinkedListImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/list/MyList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/list/Node.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/queue/EmptyQueueException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/queue/MyQueue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/queue/MyQueueImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/stack/EmptyStackException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/stack/MyStack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/main/java/uy/edu/um/tad/stack/MyStackImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/test/java/uy/edu/um/tad/heap/MyHepImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/test/java/uy/edu/um/tad/list/MyLinkedListImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/test/java/uy/edu/um/tad/queue/MyQueueImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/src/test/java/uy/edu/um/tad/stack/MyStackImplTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/obligatorio2026/users.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/uy/edu/um/doors/ProcessManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uy/edu/um/doors/ProcessManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/uy/edu/um/doors/ProcessManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/uy/edu/um/doors/ProcessManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ProcessManagerTest/ProccesManagerTestImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ProcessManagerTest/ProccesManagerTestImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/ProcessManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/ProcessManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/ProcessManagerImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/ProcessManagerImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/entities/Process.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/uy/edu/um/doors/entities/Process.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/ProcessManagerTest/ProccesManagerTestImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/ProcessManagerTest/ProccesManagerTestImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/heap/MyHeapImplTest$removeMinHeapTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/heap/MyHeapImplTest$removeMinHeapTests.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/list/MyLinkedListImplTest$GetTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/list/MyLinkedListImplTest$GetTests.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/list/MyLinkedListImplTest$RemoveByIndexTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/list/MyLinkedListImplTest$RemoveByIndexTests.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/queue/MyQueueImplTest$GetTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/uy/edu/um/tad/queue/MyQueueImplTest$GetTests.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +89,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
+    "JUnit.ProccesManagerTestImpl.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -64,9 +106,22 @@
       <option name="presentableId" value="Default" />
       <updated>1781915974884</updated>
     </task>
+    <task id="LOCAL-00001" summary="cambiado por todas">
+      <option name="closed" value="true" />
+      <created>1781918726307</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1781918726308</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="cambiado por todas" />
+    <option name="LAST_COMMIT_MESSAGE" value="cambiado por todas" />
   </component>
 </project>

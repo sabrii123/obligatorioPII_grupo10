@@ -68,47 +68,45 @@ public class ProcessManagerImpl implements ProcessManager {
                         + " | USER:" + process.getUser().getAlias() + " UID:" + process.getUser().getUid()
                         + " | P=" + process.getPriority());
             } catch (EmptyQueueException e) {
-                throw new ColaVacia("e");
+                throw new ColaVacia("La cola de procesos nuevos está vacía");
             }
         }
     }
 
     @Override
-    public void executeNextProcess() throws YaHayProcesoEjecusion {
+    public void executeNextProcess() throws YaHayProcesoEjecusion, ColaVacia {
         if (runningProcess != null) {
-            throw new YaHayProcesoEjecusion("e");
+            throw new YaHayProcesoEjecusion("Ya hay un proceso en ejecución (PID=" + runningProcess.getPid() + ").");
         }
-
-
         if (pendingProcesses.isEmpty()) {
-            throw new YaHayProcesoEjecusion("e");
+            throw new ColaVacia("No hay procesos pendientes para ejecutar.");
         }
-
 
         Process process = pendingProcesses.remove();
-
-
         process.setState("RUNNING");
-
         runningProcess = process;
 
         System.out.println("Ejecutando proceso PID=" + process.getPid());
-        ga.escribirLog(
-                "EXECUTING PROCESS: PID=" + process.getPid()
+
+        StringBuilder bloque = new StringBuilder();
+        bloque.append("EXECUTING PROCESS: PID=" + process.getPid()
                 + " | USER:" + process.getUser().getAlias()
                 + " UID:" + process.getUser().getUid());
+
         for (int i = 0; i < process.getEvents().size(); i++) {
             Event event = process.getEvents().get(i);
-            String linea = "EVENT: " + event.getType() + " | Instructions [";
+            bloque.append(System.lineSeparator());
+            bloque.append("EVENT: " + event.getType() + " | Instructions [");
             for (int j = 0; j < event.getInstructions().size(); j++) {
-                linea += event.getInstructions().get(j);
+                bloque.append(event.getInstructions().get(j));
                 if (j < event.getInstructions().size() - 1) {
-                    linea += ", ";
+                    bloque.append(", ");
                 }
             }
-            linea += "]";
-            ga.escribirLog(linea);
+            bloque.append("]");
         }
+
+        ga.escribirLog(bloque.toString());
     }
 
     @Override
@@ -136,7 +134,7 @@ public class ProcessManagerImpl implements ProcessManager {
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            throw new NoHayProcesoEjecucion("e");
+            throw new NoHayProcesoEjecucion("No hay ningún proceso en ejecución para finalizar");
         }
     }
 
@@ -169,7 +167,7 @@ public class ProcessManagerImpl implements ProcessManager {
             runningProcess = null;
 
         } else {
-            throw new NoHayProcesoEjecucion("e");
+            throw new NoHayProcesoEjecucion("No hay ningún proceso en ejecución para finalizar");
         }
 
     }
@@ -205,7 +203,7 @@ public class ProcessManagerImpl implements ProcessManager {
             finishedProcesses.push(runningProcess);
             runningProcess = null;
         } else {
-            throw new NoHayProcesoEjecucion("e");
+            throw new NoHayProcesoEjecucion("No hay ningún proceso en ejecución para terminar");
         }
     }
 

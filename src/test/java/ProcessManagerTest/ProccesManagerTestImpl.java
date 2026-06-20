@@ -94,9 +94,11 @@ public class ProccesManagerTestImpl {
     }
 
     @Test
-    void ejecutarSinPrepararLanzaExcepcion() throws Exception {
+    void ejecutarConProcesoYaEnEjecucionLanzaExcepcion() throws Exception {
         ProcessManager mgr = new ProcessManagerImpl();
         mgr.loadProcessAndUserData(crearProcessCsv().toString(), crearUsersCsv().toString());
+        mgr.prepareProcesses();
+        mgr.executeNextProcess();   // ahora sí hay uno corriendo
         assertThrows(YaHayProcesoEjecusion.class, () -> mgr.executeNextProcess());
     }
 
