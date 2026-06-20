@@ -3,7 +3,7 @@ package uy.edu.um.doors;
 import uy.edu.um.doors.exceptions.*;
 
 public interface ProcessManager {
-    public static final int MAX_FINISHED_PROCESS_ON_RAM = 3;
+    public static final int MAX_FINISHED = 3;
     public void loadProcessAndUserData(String processCsvPath, String usersCsvPath) throws DataLoadExeption;
     public void prepareProcesses() throws ColaVacia;
     public void executeNextProcess() throws YaHayProcesoEjecusion;

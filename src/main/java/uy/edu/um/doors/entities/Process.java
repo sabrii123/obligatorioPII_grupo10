@@ -105,7 +105,7 @@ public class Process implements Comparable<Process> {
 
         int userWeight;
 
-        if (this.getUser().equals("admin")) {
+        if (this.getUser().getType().equalsIgnoreCase("ADMIN")) {
             userWeight = 32;
         } else {
             userWeight = 16;

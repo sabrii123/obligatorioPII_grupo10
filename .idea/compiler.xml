@@ -8,8 +8,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="obligatorio2026" />
-        <module name="obligatorio2026 (1)" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="obligatorio2026 (1)" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

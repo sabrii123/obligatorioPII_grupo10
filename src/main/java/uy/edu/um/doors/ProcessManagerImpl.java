@@ -25,11 +25,11 @@ import java.util.List;
 public class ProcessManagerImpl implements ProcessManager {
 
     //EL DISEÑO DE LA ESTRUCTURA DE ALMACENAMIENTO DEBE IMPLEMENTARSE EN ESTA CLASE EN RELACIÓN CON LAS ENTIDADES QUE DEFINA
-    private MyQueue<Process> newProcesses;
-    private MyHeap<Process> pendingProcesses;
+    private final MyQueue<Process> newProcesses;
+    private final MyHeap<Process> pendingProcesses;
     private Process runningProcess;
-    private MyStack<Process> finishedProcesses;
-    private MyHash<Integer, User> users;
+    private final MyStack<Process> finishedProcesses;
+    private final MyHash<Integer, User> users;
 
     public ProcessManagerImpl() {
         this.newProcesses = new MyQueueImpl<>();
@@ -38,7 +38,7 @@ public class ProcessManagerImpl implements ProcessManager {
         this.users = new MyHashImpl<>();
         this.runningProcess = null;
     }
-    private int MAX_FINISHED = 7; // o el valor que les pidan/definan
+    //private int MAX_FINISHED = 7; // o el valor que les pidan/definan
     GestorArchivos ga = new GestorArchivos();
 
 
@@ -65,8 +65,7 @@ public class ProcessManagerImpl implements ProcessManager {
 
                 ga.escribirLog("NEW PENDING PROCESS: PID=" + process.getPid()
                         + " | " + process.getName()
-                        + " | USER:" + process.getUser().getAlias()
-                        + " UID:" + process.getUser().getUid()
+                        + " | USER:" + process.getUser().getAlias() + " UID:" + process.getUser().getUid()
                         + " | P=" + process.getPriority());
             } catch (EmptyQueueException e) {
                 throw new ColaVacia("e");
@@ -75,7 +74,7 @@ public class ProcessManagerImpl implements ProcessManager {
     }
 
     @Override
-    public void executeNextProcess() throws YaHayProcesoEjecusion, YaHayProcesoEjecusion {
+    public void executeNextProcess() throws YaHayProcesoEjecusion {
         if (runningProcess != null) {
             throw new YaHayProcesoEjecusion("e");
         }
@@ -94,6 +93,22 @@ public class ProcessManagerImpl implements ProcessManager {
         runningProcess = process;
 
         System.out.println("Ejecutando proceso PID=" + process.getPid());
+        ga.escribirLog(
+                "EXECUTING PROCESS: PID=" + process.getPid()
+                + " | USER:" + process.getUser().getAlias()
+                + " UID:" + process.getUser().getUid());
+        for (int i = 0; i < process.getEvents().size(); i++) {
+            Event event = process.getEvents().get(i);
+            String linea = "EVENT: " + event.getType() + " | Instructions [";
+            for (int j = 0; j < event.getInstructions().size(); j++) {
+                linea += event.getInstructions().get(j);
+                if (j < event.getInstructions().size() - 1) {
+                    linea += ", ";
+                }
+            }
+            linea += "]";
+            ga.escribirLog(linea);
+        }
     }
 
     @Override
@@ -308,21 +323,6 @@ public class ProcessManagerImpl implements ProcessManager {
             }
         } catch (EmptyStackException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void printEvents(Process p) {
-        for (int i = 0; i < p.getEvents().size(); i++) {
-            Event event = p.getEvents().get(i);
-            String instructions = "";
-            for (int j = 0; j < event.getInstructions().size(); j++) {
-                if (j > 0) {
-                    instructions += ", ";
-                }
-                instructions += event.getInstructions().get(j);
-            }
-            System.out.println("\t\tEVENT: " + event.getType()
-                    + " | Instructions [" + instructions + "]");
         }
     }
 
@@ -573,11 +573,11 @@ public class ProcessManagerImpl implements ProcessManager {
                     continue;
                 }
                 String[] datos = linea.split(";");
-                int iud = Integer.parseInt(datos[0].trim());
+                int uid = Integer.parseInt(datos[0].trim());
                 String alias = datos[1].trim();
                 String type = datos[2].trim();
-                User user = new User(iud, alias, type);
-                users.put(iud, user);
+                User user = new User(uid, alias, type);
+                users.put(uid, user);
             }
         } catch (IOException e) {
             System.out.println("Error cargando los usuarios");
@@ -624,8 +624,8 @@ public class ProcessManagerImpl implements ProcessManager {
         MyList<Event> events = new MyLinkedListImpl<>();
         // Sacamos las llaves { }
         eventosTexto = eventosTexto.replace("{", "").replace("}", "");
-        // Separamos cada evento por ;
-        String[] eventosSeparados = eventosTexto.split(";");
+        // Separamos cada evento por #
+        String[] eventosSeparados = eventosTexto.split("#");
         for (String eventoStr : eventosSeparados) {
             if (eventoStr.trim().isEmpty()) {
                 continue;
@@ -649,6 +649,22 @@ public class ProcessManagerImpl implements ProcessManager {
         }
         return events;
     }
+
+    private void printEvents(Process p) {
+        for (int i = 0; i < p.getEvents().size(); i++) {
+            Event event = p.getEvents().get(i);
+            String instructions = "";
+            for (int j = 0; j < event.getInstructions().size(); j++) {
+                if (j > 0) {
+                    instructions += ", ";
+                }
+                instructions += event.getInstructions().get(j);
+            }
+            System.out.println("\t\tEVENT: " + event.getType()
+                    + " | Instructions [" + instructions + "]");
+        }
+    }
+
 }
 
 
